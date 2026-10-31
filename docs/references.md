@@ -11,7 +11,7 @@
 - ✓ T. Romanov, *Three-dimensional lattice Yang–Mills theory in a forest gauge*, github.com/romanov360/yang-mills-3d-forest-gauge,
   Zenodo 10.5281/zenodo.23783316. Source of 4/7, −log(7β_W/4) and h = 9.599991.
 - ✓ github.com/romanov360/yang-mills-4d-forest-certificate: h_F ≤ 14.420001 in d = 4.
-- ✓ github.com/brentharts/Quantum_Gravity_Lab (commit a42519b, "qgl_tiling and sensor - v1"). Read: README §1, §5;
+- ✓ B. Hartshorn, github.com/brentharts/Quantum_Gravity_Lab (commit a42519b, "qgl_tiling and sensor - v1"). Read: README §1, §5;
   `qgl_bkl.py`, `qgl_tiling.py` headers.
 
 ## Lattice and path-integral gravity

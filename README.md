@@ -1,6 +1,6 @@
 # Quantum gravity from the lattice Yang–Mills side
 
-Tristan Romanov, with the 4Y-M collaboration in mind (Bhattacharjee, Bhattacharya, Lockwood) and Brent's
+Tristan Romanov, with the 4Y-M collaboration in mind (Bhattacharjee, Bhattacharya, Lockwood) and Brent Hartshorn's
 [Quantum Gravity Lab](https://github.com/brentharts/Quantum_Gravity_Lab).
 
 The starting point is [creelie/4Y-M v4.29.0](https://github.com/creelie/4Y-M/tree/v4.29.0). In that work, lattice
