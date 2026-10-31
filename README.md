@@ -1,7 +1,7 @@
 # Quantum gravity from the lattice Yang–Mills side
 
-Tristan Romanov, with the 4Y-M collaboration in mind (Bhattacharjee, Bhattacharya, Lockwood) and Brent Hartshorn's
-[Quantum Gravity Lab](https://github.com/brentharts/Quantum_Gravity_Lab).
+Tristan Romanov and Brent Hartshorn, building on the 4Y-M collaboration (Bhattacharjee, Bhattacharya, Lockwood,
+Romanov) and Hartshorn's [Quantum Gravity Lab](https://github.com/brentharts/Quantum_Gravity_Lab).
 
 The starting point is [creelie/4Y-M v4.29.0](https://github.com/creelie/4Y-M/tree/v4.29.0). In that work, lattice
 Yang–Mills for every compact simple group has a unique state and a gap at strong coupling, and the continuum gap is
