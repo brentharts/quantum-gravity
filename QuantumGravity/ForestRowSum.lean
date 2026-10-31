@@ -46,9 +46,32 @@ partners, and SU(2) uniqueness for `12 |β| < 1`, i.e. `β_W < 1/3`. -/
 theorem z4_count : 2 * (4 - 1) * 2 = 12 ∧ (4 : ℚ) / 12 = 1 / 3 := by norm_num
 
 /-- For a complex of triangles in which every link lies in at most `k` triangles and every triangle
-has exactly one fixed link, the SU(2) threshold is `β_W < 4 / k`. A cap `k = 6` (a flat-like
-triangulation of the plane) gives `2/3`; the 600-cell (`k = 5`) gives `4/5`. -/
+has exactly one fixed link, the SU(2) threshold is `β_W < 4 / k`. This is the best a forest can do,
+and it is not always attainable: on the 600-cell (`k = 5`) it would give `4/5`, but a forest is too
+small to touch every triangle, and the optimum is `4/9` (`cell600_nine_optimal` below). -/
 theorem triangle_threshold (k : ℕ) (hk : 0 < k) : (4 : ℚ) / k * k = 4 := by
   field_simp
+
+end QuantumGravity.Forest
+
+namespace QuantumGravity.Forest
+
+/-- **Counting lower bound.** If every free link needs at least `j` fixed neighbours and the fixed
+links supply at most `B` neighbour slots in total, then `j · #free ≤ B`. -/
+theorem need_le_supply {α : Type*} (free : Finset α) (n : α → ℕ) {j B : ℕ}
+    (hsum : ∑ e ∈ free, n e ≤ B) (hj : ∀ e ∈ free, j ≤ n e) : j * free.card ≤ B := by
+  have := Finset.card_nsmul_le_sum free n j hj
+  simp only [smul_eq_mul] at this
+  linarith [this, hsum, mul_comm j free.card]
+
+/-- **The 600-cell: nine partners is optimal.** On the 600-cell (120 vertices, 720 edges, every
+edge in 5 triangles) a free link `e` has `P(e) = 10 − (#fixed links sharing a triangle with e)`.
+A forest has at most 119 links, each a neighbour of 10 others, so at most `10 · 119 = 1190`
+neighbour slots. `P ≤ 8` for all free links would need `2 · 601 = 1202` (at least `720 − 119` free
+links, two each). Hence `max P ≥ 9`, and `python/qg/forest_partners.py` finds a forest with
+`max P = 9`: the SU(2) single-link threshold on the 600-cell is `β_W < 4/9`. -/
+theorem cell600_nine_optimal : 10 * 119 < 2 * (720 - 119) := by norm_num
+
+theorem cell600_nine_optimal' (F : ℕ) (hF : F ≤ 119) : 10 * F < 2 * (720 - F) := by omega
 
 end QuantumGravity.Forest

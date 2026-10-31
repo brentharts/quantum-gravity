@@ -71,15 +71,21 @@ def zd_complex(d: int, L: int):
     return sites, idx, link, shift, plaqs
 
 
+_ZD_CACHE: Dict[Tuple[int, int], tuple] = {}
+
+
 def zd_parent_forest(d: int, L: int, s: Dict[Tuple[int, ...], int], period: int):
-    """Fixed links: for each site x, the link from x - e_{s(x mod period)} to x."""
-    sites, idx, link, shift, plaqs = zd_complex(d, L)
-    fixed = set()
-    for x in sites:
-        mu = s[tuple(c % period for c in x)]
-        fixed.add(link(shift(x, mu, -1), mu))
+    """Fixed links: for each site x, the link from x - e_{s(x mod period)} to x.
+    Returns (max partners, number of free links attaining it)."""
+    if (d, L) not in _ZD_CACHE:
+        sites, idx, link, shift, plaqs = zd_complex(d, L)
+        parents = [[link(shift(x, mu, -1), mu) for mu in range(d)] for x in sites]
+        _ZD_CACHE[(d, L)] = (sites, plaqs, parents)
+    sites, plaqs, parents = _ZD_CACHE[(d, L)]
+    fixed = {parents[i][s[tuple(c % period for c in x)]] for i, x in enumerate(sites)}
     P = partner_counts(plaqs, fixed, len(sites) * d)
-    return max(P), fixed, plaqs
+    m = max(P)
+    return m, P.count(m), fixed
 
 
 def z4_4ym_pattern():
@@ -97,39 +103,44 @@ def z4_4ym_pattern():
     return max(P), min(q for q in P if q >= 0), per_plaq
 
 
-def zd_search(d: int, period: int, iters: int = 4000, seed: int = 1, exhaustive_limit: int = 10 ** 5):
-    """Best max-partner count over parent-map forests of the given period (exhaustive if small)."""
+def zd_search(d: int, period: int, iters: int = 20000, seed: int = 1, exhaustive_limit: int = 10 ** 5,
+              restarts: int = 4):
+    """Best max-partner count over parent-map forests of the given period (exhaustive if small,
+    otherwise annealing on (max, multiplicity of the max) with restarts). Returns (best, pattern, how)."""
     cells = list(itertools.product(range(period), repeat=d))
-    L = period if period >= 3 else 2 * period
-    if L < 3:
-        L = 4
-    best, best_s = None, None
+    L = period if period >= 3 else 4
     total = d ** len(cells)
-    rng = random.Random(seed)
     if total <= exhaustive_limit:
-        candidates = (dict(zip(cells, ch)) for ch in itertools.product(range(d), repeat=len(cells)))
-        for s in candidates:
-            m, _, _ = zd_parent_forest(d, L, s, period)
-            if best is None or m < best:
-                best, best_s = m, s
-        return best, best_s, "exhaustive"
-    s = {c: rng.randrange(d) for c in cells}
-    cur, _, _ = zd_parent_forest(d, L, s, period)
-    best, best_s = cur, dict(s)
-    T = 1.0
-    for it in range(iters):
-        c = rng.choice(cells)
-        old = s[c]
-        s[c] = rng.randrange(d)
-        m, _, _ = zd_parent_forest(d, L, s, period)
-        if m <= cur or rng.random() < math.exp((cur - m) / max(T, 1e-3)):
-            cur = m
-            if m < best:
-                best, best_s = m, dict(s)
-        else:
-            s[c] = old
-        T *= 0.999
-    return best, best_s, "annealed"
+        best, best_s = None, None
+        for ch in itertools.product(range(d), repeat=len(cells)):
+            s = dict(zip(cells, ch))
+            m, k, _ = zd_parent_forest(d, L, s, period)
+            if best is None or (m, k) < best:
+                best, best_s = (m, k), s
+        return best[0], best_s, "exhaustive"
+    best, best_s = None, None
+    for r in range(restarts):
+        rng = random.Random(seed + r)
+        s = {c: rng.randrange(d) for c in cells}
+        m, k, _ = zd_parent_forest(d, L, s, period)
+        cur = (m, k)
+        if best is None or cur < best:
+            best, best_s = cur, dict(s)
+        T = 3.0
+        for _ in range(iters // restarts):
+            c = rng.choice(cells)
+            old = s[c]
+            s[c] = rng.randrange(d)
+            m, k, _ = zd_parent_forest(d, L, s, period)
+            dl = (m - cur[0]) * 100 + (k - cur[1])
+            if dl <= 0 or rng.random() < math.exp(-dl / T):
+                cur = (m, k)
+                if cur < best:
+                    best, best_s = cur, dict(s)
+            else:
+                s[c] = old
+            T = max(0.05, T * 0.9995)
+    return best[0], best_s, "annealed"
 
 
 # ----------------------------------------------------------------------------------------------
@@ -208,6 +219,43 @@ def is_forest(nv, edges, F):
     return all(d.union(*edges[e]) for e in F)
 
 
+def greedy_cover_forest(V, edges, plaqs, seeds=40):
+    """Grow a forest greedily, each step adding the edge (keeping acyclicity) that gives a fixed
+    neighbour to the most free edges that have none yet; best of several random tie-breaks."""
+    nbr = [set() for _ in edges]
+    for p in plaqs:
+        for e in p:
+            nbr[e] |= set(p) - {e}
+    best = None
+    for seed in range(seeds):
+        rng = random.Random(seed)
+        d, F, cov = DSU(len(V)), set(), [0] * len(edges)
+        while True:
+            cands = [(sum(1 for f in nbr[e] if f not in F and cov[f] == 0), rng.random(), e)
+                     for e in range(len(edges))
+                     if e not in F and d.find(edges[e][0]) != d.find(edges[e][1])]
+            if not cands:
+                break
+            _, _, e = max(cands)
+            d.union(*edges[e])
+            F.add(e)
+            for f in nbr[e]:
+                cov[f] += 1
+        P = partner_counts(plaqs, F, len(edges))
+        key = (max(P), P.count(max(P)))
+        if best is None or key < best[0]:
+            best = (key, set(F))
+    return best
+
+
+def triangle_lower_bound(nV, nE, k):
+    """For a closed complex of triangles with every edge in exactly k triangles and two edges sharing
+    at most one triangle: P(e) = 2k - (#fixed edges sharing a triangle with e), each fixed edge is a
+    neighbour of 2k edges, and a forest has at most nV - 1 edges, so
+        max_e P(e) >= 2k - floor(2k (nV - 1) / (nE - nV + 1))."""
+    return 2 * k - (2 * k * (nV - 1)) // (nE - nV + 1)
+
+
 def simplicial_search(V, edges, tris, iters=20000, seed=0):
     """Minimise max partners over forests F by annealing (add/remove/swap one edge)."""
     eidx = {e: i for i, e in enumerate(edges)}
@@ -254,15 +302,32 @@ def simplicial_search(V, edges, tris, iters=20000, seed=0):
                 best, bestF = s, set(G)
         T *= 0.9997
     no_fix = max(partner_counts(plaqs, set(), nE))
+    (gm, gk), gF = greedy_cover_forest(V, edges, plaqs)
+    if (gm, gk) < best:
+        best, bestF = (gm, gk), gF
     return best[0], no_fix, len(bestF), bestF
+
+
+# period-3 forest of Romanov's 3D paper (lean/ForestGauge3.lean, `pat3`; index x0*9 + x1*3 + x2)
+PAT3_ROMANOV = [2, 1, 0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 2, 1, 0, 1, 2, 0, 2, 1, 0, 1, 0, 2]
+
+
+def z3_romanov_pattern():
+    cells = list(itertools.product(range(3), repeat=3))
+    s = {c: PAT3_ROMANOV[c[0] * 9 + c[1] * 3 + c[2]] for c in cells}
+    m, k, _ = zd_parent_forest(3, 3, s, 3)
+    return m, k
 
 
 def main():
     m, mn, per = z4_4ym_pattern()
     print(f"Z^4, 4Y-M straight-line forest: max partners {m} (min {mn}), fixed links per plaquette {per}, "
           f"SU(2) beta_W < {4}/{m} = {threshold_su2(m):.4f}")
+    m, k = z3_romanov_pattern()
+    print(f"Z^3, period-3 forest of the 3D paper: max partners {m} ({k} free links per 3^3 cell attain it), "
+          f"beta_W < 4/{m} = {threshold_su2(m):.4f}")
     for d, per in ((3, 2), (3, 3)):
-        b, s, how = zd_search(d, per, iters=3000)
+        b, s, how = zd_search(d, per)
         print(f"Z^{d}, parent-map forests of period {per} ({how}): best max partners {b}, "
               f"beta_W < 4/{b} = {threshold_su2(b):.4f}")
     for name, cx in (("boundary of 5-simplex (S^4)", boundary_simplex(5)),
@@ -270,9 +335,11 @@ def main():
                      ("600-cell (S^3)", cell600())):
         V, E, Tr = cx
         best, nofix, size, _ = simplicial_search(V, E, Tr, iters=6000 if len(E) > 100 else 4000)
-        print(f"{name}: {len(V)} vertices, {len(E)} edges, {len(Tr)} triangles; "
-              f"max partners without fixing {nofix}, best forest {best} ({size} fixed links); "
-              f"beta_W < {threshold_su2(best):.4f}")
+        k = nofix // 2
+        lb = triangle_lower_bound(len(V), len(E), k)
+        print(f"{name}: {len(V)} vertices, {len(E)} edges, {len(Tr)} triangles, {k} triangles per edge; "
+              f"max partners without fixing {nofix}, best forest found {best} ({size} fixed links), "
+              f"counting lower bound {lb}{' (optimal)' if lb == best else ''}; beta_W < 4/{best} = {threshold_su2(best):.4f}")
 
 
 if __name__ == "__main__":
