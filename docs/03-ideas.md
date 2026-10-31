@@ -34,7 +34,7 @@ about them.
 - **Not claimed.** The sign of f_g is scheme-dependent. The theorem is conditional on it.
 
 ### G7. Cosmological billiards: AE₃ and E₁₀ in Lean, and a QGL test
-- **Done here.** `scripts/gravity_group_checks.py` verifies exactly that AE₃ has det −2 and E₁₀ has det −1, both with
+- **Done here.** `python/qg/gravity_group_checks.py` verifies exactly that AE₃ has det −2 and E₁₀ has det −1, both with
   Lorentzian inertia (one negative direction).
 - **Next.** (a) Do the same with `decide` / `norm_num` in Lean. (b) In QGL, add a test that the Kasner u-map of
   `qgl_bkl.py` matches the reflection sequence in the Weyl group of AE₃ (PGL(2,ℤ) acting on the upper half plane),
@@ -53,7 +53,7 @@ about them.
 - **Theorem target.** For |β| and |κ| below explicit constants: a unique infinite-volume state, exponential clustering,
   a transfer-matrix gap, and **⟨e⟩ = 0** (no geometry). Combined with G1, this phase has no graviton.
 - **Our inputs.** The forest gauge applies to SO(5) (Ric = 3/4, so β_W < 15/58 for the pure-gauge part; see
-  `scripts/gravity_group_checks.py`). The V-field is a gauge–Higgs system, as in Osterwalder–Seiler. Elitzur's theorem
+  `python/qg/gravity_group_checks.py`). The V-field is a gauge–Higgs system, as in Osterwalder–Seiler. Elitzur's theorem
   already gives ⟨V⟩ = 0 without gauge fixing. The content is the *gap* and *uniqueness*, at explicit couplings, for the
   geometric observables.
 - **Why it matters.** It is the first theorem about a phase of lattice quantum gravity in four dimensions. It explains

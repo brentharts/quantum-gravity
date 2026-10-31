@@ -1,0 +1,236 @@
+\documentclass[aps,prd,twocolumn,superscriptaddress,nofootinbib]{revtex4-2}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newcommand{\bW}{\beta_{\mathrm W}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+
+\begin{document}
+
+\title{A gap is not a graviton: strong-coupling exclusions for lattice gravity in first-order form}
+
+\author{Tristan Romanov}
+\affiliation{Independent Researcher, San Francisco, CA, USA}
+\email{romanov360@gmail.com}
+
+\date{Draft, 31 October 2026}
+
+\begin{abstract}
+In Yang--Mills theory a mass gap is the goal; in gravity it is a diagnosis. We prove, in Lean~4 with Mathlib,
+that a family of reflection-positive lattice theories whose transfer-matrix gap is bounded below in physical units
+along a continuum tuning has no continuum limit with a massless mode, and that a massless mode makes the two-point
+function decay more slowly than any exponential. Combined with the strong-coupling theorems of lattice Yang--Mills
+for every compact simple group, this excludes the strong-coupling phase of Euclidean lattice gravity written as a
+gauge theory of the Lorentz group $SO(4)$ (for $\bW<4/29$) or of the de Sitter group $SO(5)$ (for $\bW<15/58$, without
+compensator) from being gravitational: these phases have a unique state, a positive transfer matrix (so no ghost
+states), and a gap. We also prove in Lean that an antiscreening gravitational correction to the Yang--Mills
+$\beta$-function preserves asymptotic freedom while a screening one produces an interacting ultraviolet fixed point;
+that on the 600-cell a gauge-fixing forest can lower the single-link Dobrushin partner count only from 10 to 9, so
+$\bW<4/9$ is optimal there; and we give two exactly solvable checks: two-dimensional Yang--Mills on a Brownian disk,
+where the area law becomes $d_F(1+gL\sqrt{C_F})e^{-gL\sqrt{C_F}}$ in the quantum boundary length $L$, and the
+two-dimensional causal-triangulation transfer matrix, whose spectrum is geometric with a lattice gap of order the
+spacing. Nothing here identifies a gravitational phase or constructs a continuum theory.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Four-dimensional lattice Yang--Mills theory has a unique state and a transfer-matrix gap at strong coupling for
+every compact simple gauge group~\cite{4YM}, and the gap problem in physical units is reduced there to a single cube
+estimate. Gravity is the next force to add~\cite{QGL}. The present note starts from one observation: the graviton
+is massless, so in any approach where gravity is a lattice theory with a transfer matrix, a gap in physical units
+is a proof that the phase is \emph{not} gravitational. The strong-coupling machinery of~\cite{4YM} produces such
+gaps at explicit couplings, and some lattice formulations of gravity are gauge theories of compact groups to which
+it applies as stated.
+
+The formulations are first-order (Palatini) gravity, whose connection is an $SO(4)$ gauge field in Euclidean
+signature, and MacDowell--Mansouri gravity~\cite{MM}, an $SO(5)$ gauge field broken to $SO(4)$ by a compensating
+vector~\cite{SW}. Monte Carlo simulations of such models find a vanishing tetrad at strong coupling~\cite{CF}, and
+causal and Euclidean dynamical triangulations have non-geometric phases~\cite{CDTreview}; none of this is proved.
+The pure Lorentz sector of a Wilson plaquette action generates $R_{\mu\nu}R^{\mu\nu}$~\cite{Zubkov,Gwl}, the
+curvature-squared sector of quadratic gravity, whose spin-2 ghost is conjectured to be confined at strong
+coupling~\cite{HR,LQA}.
+
+All Lean statements are in the repository \texttt{romanov360/quantum-gravity}, directory \texttt{QuantumGravity/},
+built against Mathlib (Lean v4.33.0), without \texttt{sorry}, with the standard axioms only; numerical checks are in
+\texttt{python/qg/}.
+
+\section{A physical gap excludes a massless mode}
+
+Let $\rho_a$ be the finite spectral measure, in lattice units, of the transfer matrix at spacing $a$ for a
+spatially smeared gauge-invariant field, so that the temporal two-point function is
+$S_a(t)=\int e^{-Et/a}\,d\rho_a(E)$. A gap $m$ in physical units along the tuning means $\rho_a((-\infty,ma))=0$.
+
+\begin{theorem}[\texttt{physicalGap\_ratio\_le}, \texttt{limit\_ratio\_of\_physicalGap}]
+For $0\le t_1\le t_2$, $S_a(t_2)\le e^{-m(t_2-t_1)}S_a(t_1)$ for every $a$, and if $Z_aS_a(t_i)\to L_i$ along any
+filter for positive renormalisations $Z_a$, then $L_2\le e^{-m(t_2-t_1)}L_1$.
+\end{theorem}
+
+A massless particle in a reflection-positive theory gives the smeared field spectral weight at arbitrarily small
+energies: a packet contains momenta $|p|<\varepsilon$ and $E=|p|$. We call a finite measure $\sigma$ on $[0,\infty)$
+\emph{massless} if $\sigma([0,\varepsilon))>0$ for every $\varepsilon>0$.
+
+\begin{theorem}[\texttt{massless\_not\_expDecay}]
+If $\sigma$ is massless, then for no $\Delta>0$ and $C$ does $\int e^{-Et}d\sigma(E)\le Ce^{-\Delta t}$ hold for
+all $t\ge1$.
+\end{theorem}
+
+\begin{proof}[Idea]
+$\int e^{-Et}d\sigma\ge\sigma([0,\Delta/2))\,e^{-\Delta t/2}$, and $Ce^{-\Delta t/2}\to0$.
+\end{proof}
+
+\begin{theorem}[\texttt{no\_massless\_limit\_of\_physicalGap}]\label{thm:nograv}
+If a family of lattice theories has a gap $m>0$ in physical units along the tuning and its renormalised two-point
+functions converge at every $t>0$ to $\int e^{-Et}d\sigma(E)$ for a finite measure $\sigma$ on $[0,\infty)$, then
+$\sigma$ is not massless.
+\end{theorem}
+
+The other alternative, a gap bounded below in \emph{lattice} units, is the no-go theorem of~\cite{4YM}: every
+renormalised two-point function then vanishes in the limit. A graviton therefore needs $\Delta_{\rm lat}(a)/a\to0$.
+
+\section{First-order lattice gravity at strong coupling}
+
+The theorem of~\cite{4YM} on every compact simple group gives, in the forest gauge, a unique free-boundary state,
+exponential clustering and a transfer-matrix gap for $\bW=N^2\beta<2N\,\mathrm{Ric}/29$, where $N$ is the dimension
+of the representation in the Wilson action and $\mathrm{Ric}=c/4$ when the Killing form is $c$ times the trace form.
+The constants are quadratic-form identities on a Cartan subalgebra, proved for all Cartan elements in
+\texttt{GravityGroups.lean}:
+
+\begin{center}
+\begin{tabular}{llccc}
+\hline
+group (rep.) & role & $c$ & Ric & range of $\bW$\\
+\hline
+$SU(2)$ (2) & self-dual Spin(4) & 4 & 1 & $4/29$\\
+$SO(4)$ (4) & Lorentz, tetrad index & 2 & $1/2$ & $4/29$\\
+$SO(5)$ (5) & de Sitter (MM) & 3 & $3/4$ & $15/58$\\
+$Sp(2)$ (4) & de Sitter, spinor & 6 & $3/2$ & $12/29$\\
+\hline
+\end{tabular}
+\end{center}
+
+$SO(4)$ is semisimple; its two factors have the same Ricci constant, which is all the Bakry--\'Emery step uses.
+
+\begin{corollary}\label{cor:lorentz}
+The Euclidean lattice Lorentz gauge theory with weight $\exp(4\beta\sum_p\mathrm{Tr}_4U_p)$, $U\in SO(4)$, has for
+$\bW=16\beta<4/29$ a unique infinite-volume state, exponential clustering and a transfer-matrix gap. Its transfer
+matrix is a positive operator (reflection positivity of the Wilson action), so its Hilbert space has no
+negative-norm states. If the gap persists in physical units along a tuning, the limit has no massless mode in any
+channel (Theorem~\ref{thm:nograv}).
+\end{corollary}
+
+The centre element $-1\in SO(4)$ acts as $-1$ on the vector representation, so vector Wilson loops have an area law
+at strong coupling~\cite{OS}. The fundamental character coefficient (\texttt{lorentz\_strong.py}) is
+$a_F(\bW)=\bW/16+O(\bW^3)$ (for $SU(2)$: $I_2(\bW)/I_1(\bW)=\bW/4+\dots$), so the leading-order string tension
+at $\bW=4/29$ is $-\log a_F=4.75$ in lattice units.
+
+\begin{remark}
+In the frozen-tetrad model the curvature-squared sector is therefore ghost-free and gapped at strong coupling; this
+is the fixed-spacing analogue of ghost confinement in quadratic gravity~\cite{HR,LQA}. Whether a continuum limit of
+this lattice model is quadratic gravity is not addressed.
+\end{remark}
+
+For MacDowell--Mansouri gravity the plaquette-pair action and the compensator change the influence count; the
+programme is in \texttt{docs/G2-pregeometric-phase.md}.
+
+\section{Gravity and asymptotic freedom}
+
+Above the Planck scale the Yang--Mills coupling runs as $dg/dt=-bg^3-fg$, with $f$ a gravitational coefficient
+whose sign is scheme dependent but non-negative in symmetry-preserving computations~\cite{FLP}. In $u=1/g^2$,
+$u(t)=(u_0+b/f)e^{2ft}-b/f$.
+
+\begin{theorem}[\texttt{RunningWithGravity.lean}]
+(i) $u$ solves $du/dt=2b+2fu$. (ii) If $f>0$, $b\ge0$, $u_0\ge0$ then $u(t)\ge u_0+2bt$: the coupling is never larger
+than without gravity, and $g^2\to0$. (iii) If $f<0<b$, then $g^2\to-f/b>0$, an interacting ultraviolet fixed point.
+(iv) If $f>0$, every $u_*\ge u_0$ is attained at $t_*=\log\frac{u_*+b/f}{u_0+b/f}/(2f)\ge0$.
+\end{theorem}
+
+Item (iv) is the statement of~\cite{4YM} that the intermediate coupling window is entered at a spacing-independent
+scale, with the gravitational correction included.
+
+\section{Yang--Mills on curved lattices}
+
+The single-link Dobrushin count of~\cite{4YM} is local: on any 2-complex with a gauge-fixing forest $F$, a free link
+$e$ has $P(e)=\sum_{p\ni e}(\#\text{free links of }p-1)$ partners and $SU(2)$ is unique for $\bW<4/\max_eP(e)$. The
+search in \texttt{forest\_partners.py} reproduces $P=12$ on $\Z^4$ and $P=7$ for the period-3 forest on $\Z^3$, and
+finds by exhaustion that period-2 forests on $\Z^3$ cannot go below 8.
+
+\begin{proposition}[\texttt{cell600\_nine\_optimal}]
+On the 600-cell (120 vertices, 720 edges, every edge in 5 triangles) every forest leaves some free link with at least
+9 partners, and a forest with $\max P=9$ exists. The optimal single-link $SU(2)$ range is $\bW<4/9$.
+\end{proposition}
+
+\begin{proof}
+$P(e)=10-n(e)$, where $n(e)$ is the number of fixed links sharing a triangle with $e$. A forest has at most 119
+links, each a neighbour of 10 links, so $\sum_{e\notin F}n(e)\le1190<2\cdot601$; some free link has $n(e)\le1$.
+A greedy forest attains 9.
+\end{proof}
+
+For closed triangulations a forest has $V-1$ links among $E\approx6V$, so gauge fixing helps little and the range is
+governed by the maximal edge degree; a uniform statement over dynamical triangulations needs a degree cap.
+
+\section{Two exactly solvable checks}
+
+\paragraph{YM$_2$ on a Brownian disk.} Two-dimensional Yang--Mills depends on the surface only through its
+area~\cite{Sengupta,Levy}; the free Brownian disk of perimeter $L$ has area density
+$L^3(2\pi A^5)^{-1/2}e^{-L^2/2A}$~\cite{BM}. Hence
+$\mathbb E[e^{-sA}]=(1+L\sqrt{2s})e^{-L\sqrt{2s}}$ (an inverse-Gamma Laplace transform via $K_{3/2}$), and the
+Haar-averaged boundary Wilson loop $d_Fe^{-g^2AC_F/2}$ becomes
+\[
+\langle\!\langle W_F\rangle\!\rangle_L=d_F\,(1+gL\sqrt{C_F})\,e^{-gL\sqrt{C_F}},
+\]
+a perimeter law in quantum length with tension $\sqrt{2\sigma_F}$. Since $\int Z(U,A)\,dU=1$ for every $A$,
+quenched and annealed averages agree. On the sphere each representation shifts the cosmological constant by
+$g^2C_\lambda/2$, and only the trivial one is non-analytic at $\mu=0$: the string susceptibility exponent $-1/2$ is
+unchanged. Monte Carlo checks are in \texttt{ym2\_brownian.py}.
+
+\paragraph{2D causal triangulations.} The one-step transfer matrix
+$M(l_1,l_2)=g^{l_1+l_2-1}\binom{l_1+l_2-1}{l_1-1}$~\cite{AL} has, numerically to ten digits, an exactly geometric
+spectrum $\lambda_{n+1}/\lambda_n=(1-s)/(1+s)$, $s=\sqrt{1-4g^2}$; with $g=\tfrac12e^{-a^2\Lambda}$ the lattice gap
+is $2\,\mathrm{artanh}\,s\sim2\sqrt{2\Lambda}\,a$. This is a solvable instance of the scaling that~\cite{4YM}
+requires of a theory with a continuum gap.
+
+\section{Cosmological billiards}
+
+Near a spacelike singularity, vacuum gravity becomes a billiard for the hyperbolic Kac--Moody algebra $AE_3$, and
+eleven-dimensional supergravity one for $E_{10}$~\cite{DHN}. \texttt{Billiards.lean} checks by \texttt{decide} the
+leading principal minors $2,3,-2$ of $AE_3$ and $2,3,\dots,10,-1$ of $E_{10}$ (one sign change: Lorentzian
+signature), and \texttt{bkl\_billiard.py} that the BKL era lengths are the continued-fraction digits of the initial
+$u$, with Gauss--Kuzmin statistics.
+
+\section{What is not claimed}
+
+No result here identifies a gravitational phase, constructs a continuum limit, or concerns Lorentzian signature.
+The strong-coupling statements are at fixed lattice spacing; Theorem~\ref{thm:nograv} needs the gap along a tuning,
+which is not proved for any of the models above. The open problems are listed in \texttt{OPEN.md}.
+
+\begin{thebibliography}{99}
+\bibitem{4YM} D.~Bhattacharjee, U.~Bhattacharya, J.~M.~Lockwood, T.~Romanov, \emph{Explicit lattice Yang--Mills mass
+gap for every compact simple group reducing the continuum gap to one cube}, Zenodo
+\href{https://doi.org/10.5281/zenodo.23444338}{10.5281/zenodo.23444338} (2026), code at github.com/creelie/4Y-M.
+\bibitem{QGL} Brent (GitHub: brentharts), \emph{Quantum Gravity Lab}, github.com/brentharts/Quantum\_Gravity\_Lab (2026).
+\bibitem{MM} S.~W.~MacDowell, F.~Mansouri, Phys.\ Rev.\ Lett.\ \textbf{38}, 739 (1977).
+\bibitem{SW} K.~S.~Stelle, P.~C.~West, Phys.\ Rev.\ D \textbf{21}, 1466 (1980).
+\bibitem{CF} S.~Catterall, D.~Ferrante, arXiv:0912.5525.
+\bibitem{CDTreview} J.~Ambj\o rn, R.~Loll, arXiv:2401.09399.
+\bibitem{Zubkov} M.~A.~Zubkov, arXiv:1308.3406.
+\bibitem{Gwl} \emph{Gravitational Wilson loop in discrete quantum gravity}, arXiv:0907.2652.
+\bibitem{HR} B.~Holdom, J.~Ren, Phys.\ Rev.\ D \textbf{93}, 124030 (2016).
+\bibitem{LQA} R.~Liu, J.~Quintin, N.~Afshordi, Phys.\ Rev.\ Lett.\ \textbf{136}, 111501 (2026), arXiv:2510.18733.
+\bibitem{OS} K.~Osterwalder, E.~Seiler, Ann.\ Phys.\ \textbf{110}, 440 (1978).
+\bibitem{FLP} S.~Folkerts, D.~F.~Litim, J.~M.~Pawlowski, Phys.\ Lett.\ B \textbf{709}, 234 (2012), arXiv:1101.5552.
+\bibitem{Sengupta} A.~Sengupta, Mem.\ Amer.\ Math.\ Soc.\ \textbf{126} (1997).
+\bibitem{Levy} T.~L\'evy, Mem.\ Amer.\ Math.\ Soc.\ \textbf{166} (2003).
+\bibitem{BM} J.~Bettinelli, G.~Miermont, Ann.\ Inst.\ H.\ Poincar\'e Probab.\ Statist.\ \textbf{53}, 1244 (2017).
+\bibitem{AL} J.~Ambj\o rn, R.~Loll, Nucl.\ Phys.\ B \textbf{536}, 407 (1998).
+\bibitem{DHN} T.~Damour, M.~Henneaux, H.~Nicolai, Class.\ Quant.\ Grav.\ \textbf{20}, R145 (2003).
+\end{thebibliography}
+
+\end{document}

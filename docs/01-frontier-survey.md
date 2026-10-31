@@ -134,7 +134,7 @@ These are the closest in spirit to our lattice Yang–Mills work.
 - **BKL / cosmological billiards.** Near a spacelike singularity, gravity becomes a billiard in the Weyl chamber of a
   hyperbolic Kac–Moody algebra: AE₃ for 4D vacuum gravity (Mixmaster) and E₁₀ for 11D supergravity
   (Damour–Henneaux–Nicolai). **background.** QGL's `qgl_bkl.py` already integrates the Mixmaster dynamics. The
-  Cartan matrices are checked in `scripts/gravity_group_checks.py`.
+  Cartan matrices are checked in `python/qg/gravity_group_checks.py`.
 
 ---
 

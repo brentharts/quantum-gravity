@@ -64,7 +64,7 @@ it is a theorem about the coarse-graining of lattice gravity in first-order form
 **Transfers.** Every theorem of 4Y-M stated "for every compact (simple) group" applies to the Euclidean gauge groups of
 first-order gravity: Spin(4) = SU(2)×SU(2) (Palatini or Plebanski, with self-dual SU(2) Ashtekar variables) and SO(5)
 or Sp(2) (MacDowell–Mansouri, Euclidean de Sitter). The ranges, computed exactly by
-`scripts/gravity_group_checks.py` with the 4Y-M formula β_W < 2N·Ric/29:
+`python/qg/gravity_group_checks.py` with the 4Y-M formula β_W < 2N·Ric/29:
 
 | group (rep) | role in gravity | Ric | range |
 |---|---|---|---|

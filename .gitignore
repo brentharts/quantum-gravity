@@ -5,3 +5,8 @@ __pycache__/
 *.aux
 *.log
 *.out
+*.bbl
+*Notes.bib
+*.fls
+*.fdb_latexmk
+*.blg
