@@ -22,9 +22,19 @@ Peter–Weyl calculation (N loop holonomies, no 6j symbols, no phases; in `brent
 `sympy_models/models/su2_peter_weyl.py`), which agrees to 2·10⁻⁶ at N = 4 and 10⁻³ at N = 5 on the lowest four levels,
 and the plaquette operators commute. The independent engine reproduces the two-plaquette ladder exactly.
 
-**Weak coupling, not tested.** The harmonic limit predicts a gap 2√(2 − cos(π/(N+1))): 2.2741, 2.1827, 2.1297 for
-N = 3, 4, 5. This was extrapolated for N = 3 (2.2749). For N = 4 and 5 the gap at g² = 0.4–0.8 is still falling with
-the energy cut, so no value is claimed. Faster state generation is needed.
+**Weak coupling: consistent, not confirmed.** The harmonic limit predicts a gap 2√(2 − cos(π/(N+1))): 2.2741, 2.1827, 2.1297 for
+N = 3, 4, 5. For N = 3 this was extrapolated directly (2.2749, from g² = 0.2–0.4). For N = 4 the gap at g² ≤ 0.5 is still
+falling with the energy cut (g² = 0.4: 2.493, 2.298, 2.198 at cuts 32, 40, 48, ratio of successive drops ≈ 0.5), so a direct
+extrapolation is not possible; N = 5 was too slow. What can be said at g² = 0.6–0.8, where the cut has converged:
+
+| g² | N = 3 gap | N = 4 gap | ratio N = 4 / N = 3 |
+|---|---|---|---|
+| 0.8 | 2.06059 | ≈ 2.0295 (cuts 32, 40: 2.0325, 2.0302; asymptote estimated) | 0.9849 |
+| 0.6 | 2.12735 | ≈ 2.0833 (cuts 32, 40, 48: 2.1282, 2.0914, 2.0848; asymptote estimated) | 0.9793 |
+
+A straight line through the two ratios extrapolates to 0.9624 at g² = 0; the harmonic formula gives 0.9598. That is a 0.3%
+agreement from two points with estimated asymptotes, so it is **consistent with** the formula, not a test of it. A real test
+needs a faster state generator (the Python enumeration takes 140 s for 13,500 states at N = 4) and cuts of order 100.
 
 **Relation to the guiding observation.** A finite-N lattice gap says nothing about a gap of a field theory
 ([G1](../PROGRESS.md)). The formula's N → ∞ limit is 2, so in the harmonic regime the gap would stay finite in lattice
