@@ -124,3 +124,16 @@ def test_clusters():
     assert g({(i, 0) for i in range(N)}) == pytest.approx(2 * math.sqrt(2 - math.cos(math.pi / (N + 1))))
     mu = cg.gap(cg.cube_surface())[1]
     assert abs(mu.min()) < 1e-9 and sorted(np.round(mu, 9))[1] == pytest.approx(4)
+
+
+# G9 quantum 6j
+def test_quantum6j():
+    from qg import quantum6j as q6
+    assert q6.classical_limit_check() < 1e-5
+    from fractions import Fraction as Fr
+    for k in (3, 5):
+        Q = q6.SU2k(k)
+        assert Q.orthogonality(1, 1, 1, 1)[0] < 1e-12
+        assert Q.orthogonality(Fr(1, 2), 1, Fr(1, 2), 1)[0] < 1e-12
+        assert abs(Q.biedenharn_elliott(1, 1, 1, 1, 1, 1, 1, 1, 1)[0]) < 1e-12
+        assert Q.total_dimension_sq() == pytest.approx((k + 2) / (2 * math.sin(math.pi / (k + 2)) ** 2))

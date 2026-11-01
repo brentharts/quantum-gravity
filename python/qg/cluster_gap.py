@@ -21,7 +21,7 @@ plaquettes that share a link. So Delta_{g -> 0} = 2 sqrt(2 - lambda_max(A)/2):
   * the N-strip (path P_N, lambda_max = 2 cos(pi/(N+1))) gives 2 sqrt(2 - cos(pi/(N+1))) -> 2, Hartshorn's
     "prediction" for general N, here a theorem about the harmonic limit (the eigenvectors are sines; see
     QuantumGravity/ClusterModes.lean);
-  * an L x L square block has lambda_max(A) = 4 cos(pi/(L+1)) -> 4, so the gap closes like pi sqrt 2 / (L+1):
+  * an L x L square block has lambda_max(A) = 4 cos(pi/(L+1)) -> 4, so the gap 2 sqrt(2 - 2 cos(pi/(L+1))) closes like 2 pi / (L+1):
     the free massless gluons of weak coupling.
 
 Not claimed: anything beyond the harmonic limit; finite-g corrections need the full Hamiltonian (Hartshorn's code).

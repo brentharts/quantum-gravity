@@ -34,10 +34,15 @@ compensator) from being gravitational: these phases have a unique state, a posit
 states), and a gap. We also prove in Lean that an antiscreening gravitational correction to the Yang--Mills
 $\beta$-function preserves asymptotic freedom while a screening one produces an interacting ultraviolet fixed point;
 that on the 600-cell a gauge-fixing forest can lower the single-link Dobrushin partner count only from 10 to 9, so
-$\bW<4/9$ is optimal there; and we give two exactly solvable checks: two-dimensional Yang--Mills on a Brownian disk,
-where the area law becomes $d_F(1+gL\sqrt{C_F})e^{-gL\sqrt{C_F}}$ in the quantum boundary length $L$, and the
-two-dimensional causal-triangulation transfer matrix, whose spectrum is geometric with a lattice gap of order the
-spacing. Nothing here identifies a gravitational phase or constructs a continuum theory.
+$\bW<4/9$ is optimal there; and that the MacDowell--Mansouri plaquette-pair action leaves 30 partners per link in
+the same gauge. We determine exactly the spectrum of the two-dimensional causal-triangulation transfer matrix:
+$\lambda_n=x_-^{2n+2}/g$, geometric with ratio $(1-s)/(1+s)$, $s=\sqrt{1-4g^2}$, so the lattice gap is of order the
+spacing, as a continuum gap requires. Two-dimensional Yang--Mills on a Brownian disk has the boundary Wilson loop
+$d_F(1+gL\sqrt{C_F})e^{-gL\sqrt{C_F}}$ in the quantum length $L$. On small SU(2) plaquette clusters read as spin
+networks, every harmonic gap is $\sqrt{2\mu_{\min}}$ for the plaquette Laplacian $\partial\partial^{T}$, which proves
+the $N$-plaquette strip formula; the largest eigenvalue of the triple-product volume operator approaches the
+classical regular tetrahedron as $1-3/(4j)$; and the Barbero--Immirzi parameter is certified to 25 digits for the
+three standard puncture countings. Nothing here identifies a gravitational phase or constructs a continuum theory.
 \end{abstract}
 
 \maketitle
@@ -139,8 +144,11 @@ is the fixed-spacing analogue of ghost confinement in quadratic gravity~\cite{HR
 this lattice model is quadratic gravity is not addressed.
 \end{remark}
 
-For MacDowell--Mansouri gravity the plaquette-pair action and the compensator change the influence count; the
-programme is in \texttt{docs/G2-pregeometric-phase.md}.
+For MacDowell--Mansouri gravity~\cite{MM} the action pairs each plaquette with the complementary plaquette at the
+same site. In the forest gauge of~\cite{4YM} every free link then has exactly 30 partners with multiplicity (42
+without gauge fixing; \texttt{MMPartners.lean}, by \texttt{decide}), against 12 for the Wilson action. The
+Lipschitz constant of a pair term and the compensator remain; the programme is in
+\texttt{docs/G2-pregeometric-phase.md}.
 
 \section{Gravity and asymptotic freedom}
 
@@ -178,7 +186,7 @@ A greedy forest attains 9.
 For closed triangulations a forest has $V-1$ links among $E\approx6V$, so gauge fixing helps little and the range is
 governed by the maximal edge degree; a uniform statement over dynamical triangulations needs a degree cap.
 
-\section{Two exactly solvable checks}
+\section{Two exactly solvable models}
 
 \paragraph{YM$_2$ on a Brownian disk.} Two-dimensional Yang--Mills depends on the surface only through its
 area~\cite{Sengupta,Levy}; the free Brownian disk of perimeter $L$ has area density
@@ -193,11 +201,57 @@ quenched and annealed averages agree. On the sphere each representation shifts t
 $g^2C_\lambda/2$, and only the trivial one is non-analytic at $\mu=0$: the string susceptibility exponent $-1/2$ is
 unchanged. Monte Carlo checks are in \texttt{ym2\_brownian.py}.
 
-\paragraph{2D causal triangulations.} The one-step transfer matrix
-$M(l_1,l_2)=g^{l_1+l_2-1}\binom{l_1+l_2-1}{l_1-1}$~\cite{AL} has, numerically to ten digits, an exactly geometric
-spectrum $\lambda_{n+1}/\lambda_n=(1-s)/(1+s)$, $s=\sqrt{1-4g^2}$; with $g=\tfrac12e^{-a^2\Lambda}$ the lattice gap
-is $2\,\mathrm{artanh}\,s\sim2\sqrt{2\Lambda}\,a$. This is a solvable instance of the scaling that~\cite{4YM}
-requires of a theory with a continuum gap.
+\paragraph{2D causal triangulations.} The one-step transfer matrix of 2D CDT is
+$M(l_1,l_2)=g^{l_1+l_2-1}\binom{l_1+l_2-1}{l_1-1}$~\cite{AL}, $0<g<\tfrac12$.
+
+\begin{theorem}[\texttt{CDT2D.lean}; proof in \texttt{docs/G3-cdt.md}]\label{thm:cdt}
+Let $s=\sqrt{1-4g^2}$ and $x_-=(1-s)/(2g)$. The symmetrised transfer matrix $D^{-1/2}MD^{1/2}$, $D=\mathrm{diag}(l)$,
+is a positive Hilbert--Schmidt operator on $\ell^2$ whose nonzero spectrum is $\lambda_n=x_-^{2n+2}/g$,
+$n\ge0$. Hence $\lambda_{n+1}/\lambda_n=(1-s)/(1+s)$ and $\Delta_{\rm lat}=2\,\mathrm{artanh}\,s$; with
+$g=\tfrac12e^{-a^2\Lambda}$, $\Delta_{\rm lat}(a)/a\to2\sqrt{2\Lambda}$.
+\end{theorem}
+
+\begin{proof}[Idea]
+On $v_x=(x^l)_l$, $v_xM=h(x)\,v_{\varphi(x)}$ with $h=x/(1-gx)$ and the M\"obius map $\varphi=g/(1-gx)$ (proved in
+Lean from the negative binomial series). Differentiating $n$ times at the fixed point $x_-\in(0,1)$, where
+$\varphi'(x_-)=x_-^2$ and $h(x_-)=x_-^2/g$, makes $M$ triangular on $w_k=\partial^kv_x|_{x_-}$ with diagonal
+$x_-^{2n+2}/g$. The $w_kD^{1/2}$ lie in $\ell^2$ and span a dense set (an analytic function on the unit disk with all
+derivatives zero at $x_-$ vanishes), and a compact self-adjoint operator is diagonalised by them.
+\end{proof}
+
+This is a solvable model of quantum gravity in which the lattice gap scales with the spacing, as~\cite{4YM}
+requires of a theory with a continuum gap; 2D gravity has no graviton, so Theorem~\ref{thm:nograv} is silent.
+
+\section{Spin networks on small clusters}
+
+Hartshorn~\cite{BHqg} reads the exactly solved SU(2) Hamiltonian clusters as loop-quantum-gravity kinematics: the
+link Casimir $j(j+1)$ is a squared area in units of $8\pi\gamma\ell_P^2$, and the gauge-invariant states are spin
+networks. Three of the open items listed there have the following answers.
+
+\paragraph{Harmonic gaps of any cluster.} Abelianising at weak coupling, plaquette fluxes $B=\partial A$ are
+oscillators with kinetic matrix $K=\partial\partial^T$ on plaquettes, and $2-W_p\simeq|B_p|^2/4$ gives
+$\omega^2=\mu/2$, $\mu\in\mathrm{spec}\,K$ (three-fold). The lowest gauge-invariant level is two soft quanta:
+$\Delta_{g\to0}=\sqrt{2\mu_{\min}}$, with $\mu_{\min}$ the least nonzero eigenvalue (zero modes are Bianchi
+identities of closed surfaces). For planar clusters $K=4I-A$ with $A$ the adjacency of plaquettes sharing a link.
+This reproduces $\sqrt8$, $\sqrt6$ and $2\sqrt{2-\cos\frac\pi4}$ for one, two and three plaquettes, explains why the
+L-shape has the strip's gap (both graphs are $P_3$), and predicts $\Delta=2$ for the $2\times2$ block and
+$2\sqrt{2-\sqrt3/2}$ for the T-shape. For the $N$-strip the eigenvectors are sines, and \texttt{ClusterModes.lean}
+proves $\Delta_{g\to0}=2\sqrt{2-\cos\frac{\pi}{N+1}}$ for every $N$.
+
+\paragraph{The volume of a four-valent vertex.} In the coupled basis $|k\rangle$ of $(j_1j_2)\to k$, the triple
+product $Q=\epsilon_{abc}J_{1a}J_{2b}J_{3c}$ is $i$ times a tridiagonal matrix with
+$a_k=\sqrt{\Delta(j_1,j_2,k)\Delta(j_3,j_4,k)}/(4\sqrt{4k^2-1})$,
+$\Delta(a,b,k)=(a+b+k+1)(-a+b+k)(a-b+k)(a+b-k+1)$, which agrees with brute-force tensor products to $10^{-14}$.
+Matching $V^2=\frac29|A_1\cdot(A_2\times A_3)|$ of a classical tetrahedron fixes
+$V=\frac{\sqrt2}{3}(8\pi\gamma\ell_P^2)^{3/2}\sqrt{|Q|}$. For four equal spins the ratio of $\lambda_{\max}(Q)$ to
+the regular tetrahedron's $\frac{4}{3\sqrt3}[j(j+1)]^{3/2}$, which~\cite{BHqg} found rising to 0.921 at $j=8$,
+tends to 1: numerically $j(1-\text{ratio})\to3/4$ (0.74998 at $j=65536$), a semiclassical limit of the kind
+derived by Bohr--Sommerfeld methods~\cite{BH}.
+
+\paragraph{The Immirzi parameter.} Matching $S=A/4\ell_P^2$ to puncture counts gives $\gamma=\ln2/(\pi\sqrt3)$ for
+spin-$\frac12$ punctures, and for all spins the roots of $1=\sum_j c_j e^{-2\pi\gamma\sqrt{j(j+1)}}$ with $c_j=2$
+(Domagala--Lewandowski, Meissner~\cite{DL,Meissner}) or $c_j=2j+1$ (Ghosh--Mitra~\cite{GM}). Bisection with an
+explicit geometric tail bound certifies $\gamma=0.2375329579659206643583771$ and $0.2740668582328299962167637$.
 
 \section{Cosmological billiards}
 
@@ -232,6 +286,12 @@ gap for every compact simple group reducing the continuum gap to one cube}, Zeno
 \bibitem{Levy} T.~L\'evy, Mem.\ Amer.\ Math.\ Soc.\ \textbf{166} (2003).
 \bibitem{BM} J.~Bettinelli, G.~Miermont, Ann.\ Inst.\ H.\ Poincar\'e Probab.\ Statist.\ \textbf{53}, 1244 (2017).
 \bibitem{AL} J.~Ambj\o rn, R.~Loll, Nucl.\ Phys.\ B \textbf{536}, 407 (1998).
+\bibitem{BHqg} B.~Hartshorn, \emph{Spin networks on the SU(2) ladder: checked equations toward loop quantum
+gravity}, github.com/brentharts/openai\_math\_yang\_mills (2026).
+\bibitem{BH} E.~Bianchi, H.~M.~Haggard, Phys.\ Rev.\ Lett.\ \textbf{107}, 011301 (2011).
+\bibitem{DL} M.~Domaga\l a, J.~Lewandowski, Class.\ Quant.\ Grav.\ \textbf{21}, 5233 (2004).
+\bibitem{Meissner} K.~A.~Meissner, Class.\ Quant.\ Grav.\ \textbf{21}, 5245 (2004).
+\bibitem{GM} A.~Ghosh, P.~Mitra, Phys.\ Lett.\ B \textbf{616}, 114 (2005).
 \bibitem{DHN} T.~Damour, M.~Henneaux, H.~Nicolai, Class.\ Quant.\ Grav.\ \textbf{20}, R145 (2003).
 \end{thebibliography}
 
