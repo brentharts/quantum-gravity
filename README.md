@@ -19,7 +19,8 @@ phases, which simulations have seen but nobody has proved anything about.
 | [`paper/main.pdf`](paper/main.pdf) | Draft: *A gap is not a graviton: strong-coupling exclusions for lattice gravity in first-order form* (G1, G8, G6, G4, G10, G3, G7) |
 | [`PROGRESS.md`](PROGRESS.md) | Status of ideas G0–G12 |
 | [`OPEN.md`](OPEN.md) | G0: four open problems of lattice quantum gravity, mirroring 4Y-M's |
-| [`docs/`](docs) | Frontier survey (Oct 2026), how 4Y-M meets gravity, the ideas, references, and notes on G2, G3, G4, G5, G13–G17 |
+| [`docs/hartshorn-bridge.md`](docs/hartshorn-bridge.md) | How this repository answers the open items of Hartshorn's *Spin Networks on the SU(2) Ladder*, with predictions for his code |
+| [`docs/`](docs) | Frontier survey (Oct 2026), how 4Y-M meets gravity, the ideas, references, and notes on G2, G3, G4, G5 |
 | [`QuantumGravity/`](QuantumGravity) | Lean 4 / Mathlib (v4.33.0); no `sorry`, standard axioms only |
 | [`python/qg/`](python/qg) | Numerical and exact-arithmetic checks; tests in `python/tests` |
 
@@ -31,6 +32,9 @@ phases, which simulations have seen but nobody has proved anything about.
 | `RunningWithGravity.lean` | G6 | with antiscreening gravity asymptotic freedom survives (and the coupling is never larger than without gravity); with screening, an interacting UV fixed point g² → −f/b; the window is still entered at an explicit scale |
 | `GravityGroups.lean` | G2/G8 | Killing/trace ratios for SU(2), SO(4), SO(5), Sp(2) on the whole Cartan subalgebra; ranges 4/29, 4/29, 15/58, 12/29 |
 | `ForestRowSum.lean` | G4 | the partner count on any 2-complex; **the 600-cell: 9 partners is optimal** (β_W < 4/9) |
+| `CDT2D.lean` | G3 | the 2D CDT propagator acts on geometric sequences by a Möbius map (negative binomial series); fixed point, φ′ = x₋², eigenvalues x₋^{2n+2}/g with ratio (1−s)/(1+s) |
+| `ClusterModes.lean` | G15 | sine modes of the N-plaquette strip; lowest mode k = 1; gap 2√(2 − cos(π/(N+1))) for every N |
+| `MMPartners.lean` | G2 | MacDowell–Mansouri plaquette pairs in the 4Y-M forest gauge: 30 partners per free link (42 unfixed) |
 | `Billiards.lean` | G7 | AE₃ minors 2, 3, −2 and E₁₀ minors 2, …, 10, −1 by `decide` (Lorentzian); E₈ unimodular, E₉ affine |
 
 ## Python (`python3 -m pytest python/tests`)
@@ -44,6 +48,10 @@ phases, which simulations have seen but nobody has proved anything about.
 | `sixj.py` | G9 | 6j orthogonality, Biedenharn–Elliott and Racah identities exactly; Ponzano–Regge asymptotics |
 | `cq_tradeoff.py` | G11 | qubit backreaction on a classical momentum: Γ·D₂ = F²/4 at every measurement strength |
 | `bkl_billiard.py` | G7/G12 | BKL era lengths = continued-fraction digits; Gauss–Kuzmin statistics |
+| `immirzi.py` | G13 | Immirzi parameter for three countings, certified: 0.12738…, 0.23753 29579 65920 66…, 0.27406 68582 32829 99… |
+| `volume.py` | G14 | quantum tetrahedron: closed-form matrix elements, prefactor, λ_max/classical → 1 − 3/(4j) |
+| `cluster_gap.py` | G15 | harmonic gaps of any plaquette cluster from ∂∂ᵀ; reproduces Hartshorn's 1-, 2-, 3-plaquette and L values |
+| `quantum6j.py` | G9 | SU(2)_k quantum 6j: orthogonality, Biedenharn–Elliott, D², q → 1 |
 | `gravity_group_checks.py` | G2/G7 | exact rational cross-check of the Lean group constants and Cartan matrices |
 | `immirzi.py` | G13 | Immirzi parameter from three counting conventions: 0.1274, 0.2375 (m = ±j), 0.2741 (all projections); renewal-equation growth checked |
 | `kerr.py` | G14 | Kerr: Smarr and first law at both horizons, Penrose gap M r₋/2, A₊A₋ = (8πJ)² (exact); heuristic puncture count N ≥ 2π\|J\|/ln 2 |

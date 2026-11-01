@@ -3,3 +3,6 @@ import QuantumGravity.RunningWithGravity
 import QuantumGravity.Billiards
 import QuantumGravity.GravityGroups
 import QuantumGravity.ForestRowSum
+import QuantumGravity.CDT2D
+import QuantumGravity.ClusterModes
+import QuantumGravity.MMPartners

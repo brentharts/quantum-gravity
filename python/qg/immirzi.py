@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""G13. The Immirzi parameter from counting punctures, rederived (not quoted).
+"""G13. The Barbero-Immirzi parameter from three puncture countings, rederived.
 
-Area spectrum of loop quantum gravity: a puncture of spin j contributes a_j = 8 pi gamma sqrt(j(j+1)) l_P^2.
-Black-hole entropy S = ln(number of spin-network states on a horizon of area A) = A/4 (l_P = 1) fixes gamma.
+Hartshorn's quantum gravity paper fixes gamma_I = ln 2 / (pi sqrt 3) ~ 0.1274 from spin-1/2 punctures only and
+quotes the all-spin value 0.2375 (Domagala-Lewandowski) without rederiving it. Here all three standard countings are
+solved. A horizon of area A = 8 pi gamma l_P^2 sum_i sqrt(j_i (j_i + 1)) with S = A / (4 l_P^2) gives, at leading order:
 
-  * spin-1/2 punctures only:  N punctures, 2^N states (each puncture carries a 2-dim space, gauge constraint ignored at
-    leading order), area 4 sqrt(3) pi gamma N, so S = N ln 2 = A/4  =>  gamma = ln 2 / (pi sqrt 3) = 0.12738.
-  * all spins j = 1/2, 1, 3/2, ... with degeneracy 2j+1 per puncture: the exponential growth rate of the number of
-    states at fixed area is lambda, the root of     sum_j (2j+1) exp(-lambda a_j / (8 pi gamma)... ) = 1.
-    Writing the area as A = 8 pi gamma sum_i sqrt(j_i(j_i+1)) the count is a renewal problem; the number of states of
-    area <= A grows as exp(lambda A / (8 pi gamma)) with lambda the root of  sum_j (2j+1) exp(-lambda sqrt(j(j+1))) = 1.
-    S = A/4 then needs  lambda/(8 pi gamma) = 1/4,  i.e.  gamma = lambda/(2 pi).   (value 0.2741, Ghosh-Mitra,
-    gr-qc/0411035 eq. (7)).  Counting only the projections m = +-j (degeneracy 2 instead of 2j+1) gives the Domagala-Lewandowski
-    value 0.2375, and the spin-1/2 only count gives 0.1274.  The conventions differ in what is counted, not in the area spectrum.
+  (a) spin-1/2 only, 2 states per puncture (ABCK / Rovelli):  gamma = ln 2 / (pi sqrt 3)
+  (b) all spins, 2 states per puncture, projection m = +-j only (Domagala-Lewandowski, Meissner 2004):
+          1 = sum_{j = 1/2, 1, 3/2, ...} 2 exp(-2 pi gamma sqrt(j (j + 1)))
+  (c) all spins, 2j + 1 states per puncture (Ghosh-Mitra):
+          1 = sum_j (2 j + 1) exp(-2 pi gamma sqrt(j (j + 1)))
 
-The renewal root is computed here to 15 digits, and the exponential growth rate is checked against a direct count of
-sequences of punctures with total area <= A.
+Each f(gamma) = sum - 1 is strictly decreasing in gamma, so the root is bracketed by evaluating f with an explicit
+tail bound: for j >= J, sqrt(j (j+1)) >= j + 1/2 - 1/(8 j) >= j, so the terms are at most c_j e^(-2 pi gamma j)
+and the tail is a geometric(-type) series summed in closed form. Arithmetic is 60-digit mpmath.
 
+Not claimed: which counting is right. That is a question about the quantum horizon (and, in newer work, about
+the SU(2) Chern-Simons treatment), not about this arithmetic.
 Run: python3 python/qg/immirzi.py
 """
 from __future__ import annotations
