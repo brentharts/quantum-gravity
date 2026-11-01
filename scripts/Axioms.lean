@@ -17,3 +17,6 @@ import QuantumGravity
 #print axioms QuantumGravity.Groups.range_so5
 #print axioms QuantumGravity.Forest.partners
 #print axioms QuantumGravity.Forest.square_one_fixed
+#print axioms QuantumGravity.CDT.propagator_row
+#print axioms QuantumGravity.CDT.ratio_xm
+#print axioms QuantumGravity.CDT.eigen_geometric

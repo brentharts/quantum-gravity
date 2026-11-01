@@ -3,3 +3,4 @@ import QuantumGravity.RunningWithGravity
 import QuantumGravity.Billiards
 import QuantumGravity.GravityGroups
 import QuantumGravity.ForestRowSum
+import QuantumGravity.CDT2D
