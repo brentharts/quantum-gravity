@@ -65,3 +65,23 @@ def test_strip_levels():
     assert w3[0] == pytest.approx(2.753963, abs=2e-5)
     w4, _ = spin_network_strip.lowest(4, 16, 2.0, k=2)
     assert w4[0] == pytest.approx(3.67192, abs=2e-5)
+
+
+# G17 volume prefactor
+def test_volume_classical():
+    from qg import volume_tetrahedron as vt
+    assert vt.regular_tetrahedron_triple_product() == pytest.approx(4 / (3 * math.sqrt(3)), rel=1e-12)
+    lhs, rhs = vt.volume_prefactor_identity()
+    assert lhs == pytest.approx(rhs, rel=1e-12)
+    assert vt.smallest_volume() == pytest.approx(1.7769, abs=2e-3)
+
+
+def test_volume_semiclassical():
+    from qg import volume_tetrahedron as vt
+    s = vt.q_spectrum(1)                     # four spin-1/2: Q = +-sqrt3/4
+    assert max(abs(s)) == pytest.approx(math.sqrt(3) / 4, rel=1e-9)
+    assert vt.ratio(3) == pytest.approx(0.79373, abs=2e-5)       # four spin-3/2, as in the exact radicals
+    r = [vt.ratio(k) for k in (8, 16, 24, 32)]
+    assert all(a < b < 1 for a, b in zip(r, r[1:]))
+    j = 16.0
+    assert r[-1] == pytest.approx(1 - 3 / (4 * j), abs=0.005)
