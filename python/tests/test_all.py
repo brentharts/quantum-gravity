@@ -1,5 +1,7 @@
 """Fast checks of every numbered idea that has code (run: pytest python/tests)."""
 import math
+
+import numpy as np
 from fractions import Fraction
 
 import pytest
@@ -89,3 +91,36 @@ def test_sixj():
 def test_strong_coupling():
     assert lorentz_strong.su2_aF_numeric(0.2) == pytest.approx(lorentz_strong.su2_aF(0.2), rel=1e-9)
     assert lorentz_strong.so4_aF(0.05) == pytest.approx(0.05 / 16, rel=1e-4)
+
+
+# G13 Immirzi
+def test_immirzi():
+    from qg import immirzi
+    lo, hi = immirzi.solve("two", digits=20)
+    assert abs(float(lo) - 0.23753295796592066) < 1e-15
+    lo, hi = immirzi.solve("dim", digits=20)
+    assert abs(float(lo) - 0.27406685823282999) < 1e-15
+
+
+# G14 volume
+def test_volume():
+    from qg import volume
+    import numpy as np
+    for js in ((0.5,) * 4, (1.5,) * 4, (1, 1, 0.5, 0.5)):
+        assert np.max(np.abs(volume.brute_force_spectrum(js) - np.sort(volume.spectrum(*js)))) < 1e-12
+    assert volume.ratio_regular(8) == pytest.approx(0.921229, abs=1e-6)
+    assert 4096 * (1 - volume.ratio_regular(4096)) == pytest.approx(0.75, abs=1e-3)
+
+
+# G15 clusters
+def test_clusters():
+    from qg import cluster_gap as cg
+    g = lambda cells: cg.gap(cg.planar_cluster(cells))[0]
+    assert g({(0, 0)}) == pytest.approx(math.sqrt(8))
+    assert g({(0, 0), (1, 0)}) == pytest.approx(math.sqrt(6))
+    assert g({(0, 0), (1, 0), (2, 0)}) == pytest.approx(g({(0, 0), (1, 0), (0, 1)}))
+    assert g({(0, 0), (1, 0), (0, 1), (1, 1)}) == pytest.approx(2.0)
+    N = 7
+    assert g({(i, 0) for i in range(N)}) == pytest.approx(2 * math.sqrt(2 - math.cos(math.pi / (N + 1))))
+    mu = cg.gap(cg.cube_surface())[1]
+    assert abs(mu.min()) < 1e-9 and sorted(np.round(mu, 9))[1] == pytest.approx(4)

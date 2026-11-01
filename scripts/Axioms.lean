@@ -20,3 +20,7 @@ import QuantumGravity
 #print axioms QuantumGravity.CDT.propagator_row
 #print axioms QuantumGravity.CDT.ratio_xm
 #print axioms QuantumGravity.CDT.eigen_geometric
+#print axioms QuantumGravity.Cluster.strip_mode
+#print axioms QuantumGravity.Cluster.strip_lowest
+#print axioms QuantumGravity.MM.pair_partners_thirty
+#print axioms QuantumGravity.Groups.dim_four_twice

@@ -73,3 +73,26 @@ theorem range_so5 : betaWmax 5 3 = 15 / 58 := by norm_num [betaWmax]
 theorem range_sp2 : betaWmax 4 6 = 12 / 29 := by norm_num [betaWmax]
 
 end QuantumGravity.Groups
+
+namespace QuantumGravity.Groups
+
+/-- **Dimension four, twice** (Hartshorn). A field with one fixed link at every site and exactly one in every
+plaquette needs the plaquettes through a link, `2 (d − 1)`, to equal the plaquettes at a site, `d (d − 1)/2`
+(stated here doubled, to stay in `ℕ`). The space of two-forms splits as two copies of the adjoint of `su(2)`
+(`Λ² = Λ⁺ ⊕ Λ⁻`, dimension `2 · 3`) exactly when `d (d − 1)/2 = 6`. Both conditions single out `d = 4`. -/
+theorem dim_four_twice (d : ℕ) (hd : 2 ≤ d) :
+    (4 * (d - 1) = d * (d - 1) ↔ d = 4) ∧ (d * (d - 1) = 2 * 6 ↔ d = 4) := by
+  constructor
+  · constructor
+    · intro h
+      have h1 : 0 < d - 1 := by omega
+      exact (Nat.eq_of_mul_eq_mul_right h1 h).symm
+    · rintro rfl; rfl
+  · constructor
+    · intro h
+      rcases Nat.lt_or_ge d 5 with h5 | h5
+      · interval_cases d <;> simp_all
+      · nlinarith [Nat.sub_add_cancel (show 1 ≤ d by omega)]
+    · rintro rfl; rfl
+
+end QuantumGravity.Groups
