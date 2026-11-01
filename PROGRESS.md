@@ -17,8 +17,14 @@ Ideas are as numbered in [docs/03-ideas.md](docs/03-ideas.md). Status as of 2026
 | G10 | YM₂ on Liouville quantum gravity | Brownian-disk Wilson loop **derived and checked**; sphere sectors shift μ | `python/qg/ym2_brownian.py`, `paper/` |
 | G11 | Decoherence–diffusion trade-off for QGL | saturating model **built and checked**; port into QGL **to do** (Brent's repo) | `python/qg/cq_tradeoff.py` |
 | G12 | Small QGL tests | Gauss–Kuzmin for BKL eras **checked** | `python/qg/bkl_billiard.py` |
+| G13 | Immirzi parameter from counting punctures | three conventions **derived and checked**: 0.1274 (spin ½), 0.2375 (Domagala–Lewandowski), 0.2741 (all projections); the value 0.2375 is the middle one | `python/qg/immirzi.py`, `docs/G13-immirzi-counting.md` |
+| G14 | Kerr horizons and the Penrose gap | identities (Smarr, first law at both horizons, Penrose gap M r₋/2, A₊A₋ = (8πJ)²) **checked exactly**; the heuristic composition with spin-½ area is labelled as such | `python/qg/kerr.py`, `docs/G14-kerr-horizons.md` |
+| G15 | Planar maps, FK weights, SU(2)_k loop weight | Tutte and Mullin counts by brute force, FK dictionary, closed walks on A_{k+1} **checked**; no map from spin networks to maps constructed | `python/qg/planar_maps.py`, `docs/G15-planar-maps-su2k.md` |
+| G16 | SU(2) strip of N = 3, 4, 5 plaquettes in the spin-network basis | N = 4, 5 levels **agree** with an independent Peter–Weyl calculation (2e-6, 1e-3) under a fitted phase rule; N = 4, 5 weak-coupling gap **not tested** | `python/qg/spin_network_strip.py`, `docs/G16-spin-network-strip.md` |
 
 ## Next steps, in order
+
+0. G16: a faster state generator to reach g² < 1 at N = 4, 5 and test 2√(2 − cos(π/(N+1))); G13: volume prefactor of the triple-product operator against the semiclassical tetrahedron; SU(2)_k deformation of the strip with quantum 6j (the link to G9's Turaev–Viro item).
 
 1. G8: rigorous area law for SO(4) vector loops at β_W < 4/29, with explicit constants (polymer expansion), to add to
    the paper.
